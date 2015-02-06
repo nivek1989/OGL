@@ -23,7 +23,7 @@
 
 const
   IncludeLocation = 'https://raw.githubusercontent.com/nivek1989/OGL/master/ogl.simba';
-  Version = 0.9;
+  Version = 0.9;//version
 
 procedure UpdateInclude();
 var
