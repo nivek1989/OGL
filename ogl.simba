@@ -21,6 +21,32 @@
     time:integer;
   end;
 
+const
+  IncludeLocation = 'https://raw.githubusercontent.com/nivek1989/OGL/master/ogl.simba';
+  Version = 0.9;
+
+procedure UpdateInclude();
+var
+  update: string;
+  pos1, pos2, version: integer;
+begin
+  update:= GetPage(IncludeLocation);
+  if((update = '') or (pos('<!DOCTYPE HTML PUBLIC', update) = 1))then
+  begin
+    WriteLn('Update was not found.  Sorry.');
+    Exit;
+  end;
+  pos1:= pos1('Version = ', update);
+  if(pos1 <= 0)then
+  begin
+    Writeln('Version wasn''t found in the Core update script.');
+  end else begin
+    pos2:= posex(';', update, pos1);
+    version:= Between(update, 'Version = ', ';');
+    writeln(version);
+  end;
+end;
+          
   function countDown.setTime(timeToAdd:integer):integer;
     begin
       time:=getSystemTime+timeToAdd;
