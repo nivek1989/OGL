@@ -11,46 +11,67 @@
   {$include_once GLX/Interfaces.Simba}
   {$include_once GLX/Setup.Simba}
 
-  var
-    __glModelArray:tCardinalArray;
-      __glTextureArray:tIntegerArray;
-
-    obsDebug:boolean=false;
-
-  type countDown=record
-    time:integer;
-  end;
 
 const
   IncludeLocation = 'https://raw.githubusercontent.com/nivek1989/OGL/master/ogl.simba';
   Version = 0.9;//version
 
+type
+  countDown=record
+    time:integer;
+  end;
+
+var
+  __glModelArray:tCardinalArray;
+  __glTextureArray:tIntegerArray;
+
+  obsDebug:boolean=false;
+
+
 procedure UpdateInclude();
 var
-  update: string;
-  pos1, pos2, version: integer;
+  update, versionStr: string;
+  ver: extended;
+  fh: integer;
 begin
   update:= GetPage(IncludeLocation);
   if((update = '') or (pos('<!DOCTYPE HTML PUBLIC', update) = 1))then
   begin
-    WriteLn('Update was not found.  Sorry.');
+    MessageBox('Update script page was not found.  Please report this to the devs.', 0);
     Exit;
   end;
-  pos1:= pos1('Version = ', update);
-  if(pos1 <= 0)then
+  versionStr:= Between('Version = ', ';//version', update);
+  if(versionStr = '')then
   begin
-    Writeln('Version wasn''t found in the Core update script.');
+    Writeln('Version wasn''t found in the Core update script.  Please report this to the devs.', 0);
   end else begin
-    pos2:= posex(';', update, pos1);
-    version:= Between(update, 'Version = ', ';');
-    writeln(version);
+    if(ver < Version)then
+    begin
+    writeln('yes');
+      try
+      begin
+        fh := Rewritefile(AppPath + 'Includes/OGL/ogl.simba', true);
+        WriteFileString(fh, update);
+        MessageBox('Successfully updated the OGL Include to v' + floattostr(ver) + '! Please close and re-open your simba to take advantage of the latest version.', 'Success', 0);
+        TerminateScript();
+      end;
+      except
+      begin
+        MessageBox('An error occurred while trying to update your OGL include.  Please report this to the devs.', 'Error', 0);
+      end;
+      finally
+        begin
+          CloseFile(fh);
+        end;
+      end;
+    end;
   end;
 end;
           
-  function countDown.setTime(timeToAdd:integer):integer;
-    begin
-      time:=getSystemTime+timeToAdd;
-    end;
+function countDown.setTime(timeToAdd:integer):integer;
+begin
+  time:=getSystemTime+timeToAdd;
+end;
 
   function countDown.timeRemaining():integer;
     begin
